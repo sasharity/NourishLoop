@@ -1,0 +1,1 @@
+Do not despair. Do not give up. Look for the sunlight through the clouds." — President Gordon B. Hinckley - Emilio's favorite quote
