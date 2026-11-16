@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
+import { FavoritesProvider } from "@/components/FavoritesProvider";
 
 const geist = Geist({
   variable: "--font-geist-sans",
@@ -21,7 +22,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={geist.variable}>{children}</body>
+      <body className={geist.variable}>
+      <FavoritesProvider>
+        {children}
+      </FavoritesProvider>
+      </body>
     </html>
   );
 }
