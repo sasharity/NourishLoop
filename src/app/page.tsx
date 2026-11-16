@@ -1,69 +1,124 @@
-import Image from "next/image";
+
+import Link from "next/link";
+import Navbar from "@/components/Navbar";
+import RecipeCard from "@/components/RecipeCard";
+import { recipes } from "@/data/recipes";
+
+const categories = [
+  { name: "Breakfast", icon: "☀", count: "12 recipes" },
+  { name: "Lunch", icon: "◉", count: "18 recipes" },
+  { name: "Dinner", icon: "☾", count: "24 recipes" },
+  { name: "Snacks", icon: "◇", count: "16 recipes" },
+];
 
 export default function Home() {
+  const featured = recipes[0];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <>
+      <Navbar />
+
+      <main className="page-container">
+        <section className="welcome-section">
+          <div>
+            <span className="eyebrow">YOUR DAILY NOURISHMENT</span>
+            <h1>Good morning, Camille</h1>
+            <p>Your next delicious meal is just around the corner.</p>
+          </div>
+          <span className="streak-badge">5 Day Streak</span>
+        </section>
+
+        <section className="featured-section">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">TODAY'S HIGHLIGHT</span>
+              <h2>Featured recipe</h2>
+            </div>
+            <Link href="/recipes" className="text-link">
+              Explore all 
+            </Link>
+          </div>
+
+          <Link
+            href={`/recipes/${featured.id}`}
+            className="featured-card"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+            <img src={featured.image} alt={featured.title} />
+            <div className="featured-overlay">
+              <span className="featured-tag">FEATURED RECIPE</span>
+              <h2>{featured.title}</h2>
+              <p>{featured.description}</p>
+              <span className="featured-action">
+                View recipe 
+              </span>
+            </div>
+          </Link>
+        </section>
+
+        <section className="schedule-section" id="meal-planner">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">YOUR DAILY PLAN</span>
+              <h2>Today's meal schedule</h2>
+            </div>
+            <span className="date-label">2 meals planned</span>
+          </div>
+
+          <div className="schedule-grid">
+            <div className="schedule-item">
+              <span className="schedule-time">BREAKFAST</span>
+              <h3>Avocado Toast</h3>
+              <p>8:00 AM · Planned</p>
+            </div>
+            <div className="schedule-item">
+              <span className="schedule-time">LUNCH</span>
+              <h3>Salmon Bowl</h3>
+              <p>1:00 PM · Planned</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="category-section">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">FIND YOUR NEXT MEAL</span>
+              <h2>Explore by meal</h2>
+            </div>
+          </div>
+
+          <div className="category-grid">
+            {categories.map((category) => (
+              <Link
+                href={"/recipes"}
+                key={category.name}
+                className="category-card"
+              >
+                <span className="category-icon">{category.icon}</span>
+                <strong>{category.name}</strong>
+                <small>{category.count}</small>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="trending-section">
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">COMMUNITY FAVOURITES</span>
+              <h2>Trending this week</h2>
+            </div>
+            <Link href="/recipes" className="text-link">
+              View all 
+            </Link>
+          </div>
+
+          <div className="recipe-grid">
+            {recipes.slice(0, 3).map((recipe) => (
+              <RecipeCard key={recipe.id} recipe={recipe} />
+            ))}
+          </div>
+        </section>
       </main>
-    </div>
+    </>
   );
 }
