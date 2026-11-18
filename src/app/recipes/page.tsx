@@ -17,19 +17,20 @@ export default function RecipesPage() {
   const [search, setSearch] = useState("");
   const [loadError, setLoadError] = useState(false);
 
-  const filteredRecipes = useMemo(() => {
-    return recipes.filter((recipe) => {
-      const matchesCategory =
-        category === "All" || recipe.category === category;
+  
+const filteredRecipes = useMemo(() => {
+  return recipes.filter((recipe) => {
+    const matchesCategory =
+      category === "All" || recipe.category === category;
 
-      const searchText =
-        `${recipe.title} ${recipe.description} ${recipe.category} ${recipe.ingredients
-          .map((ingredient) => ingredient.name)
-          .join(" ")}`.toLowerCase();
+    const matchesSearch = recipe.title
+      .toLowerCase()
+      .includes(search.trim().toLowerCase());
 
-      return matchesCategory && searchText.includes(search.toLowerCase());
-    });
-  }, [category, search]);
+    return matchesCategory && matchesSearch;
+  });
+}, [category, search]);
+
 
   return (
     <>

@@ -867,3 +867,52 @@ h2 {
     opacity: 0.45;
   }
 }
+
+
+/* Favourite controls */
+
+.recipe-image-link {
+  position: relative;
+}
+
+.favorite-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: white;
+  color: var(--green);
+  font-size: 21px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: background 0.2s, color 0.2s;
+}
+
+.favorite-button:hover {
+  background: var(--mint);
+}
+
+.favorite-button.saved {
+  background: var(--green);
+  color: white;
+}
+
+.empty-favorite-icon {
+  margin-bottom: 12px;
+  color: var(--green);
+  font-size: 42px;
+}
+
+.mobile-nav {
+  overflow-x: auto;
+}
+
+.mobile-nav-link {
+  min-width: 58px;
+}
