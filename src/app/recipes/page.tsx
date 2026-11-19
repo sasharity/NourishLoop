@@ -1,11 +1,12 @@
 
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import RecipeCard from "@/components/RecipeCard";
-import { recipes } from "@/data/recipes";
+import { supabase } from "@/lib/supabase";
+import type { Recipe } from "@/data/recipes";
 
 const categories = ["All", "Breakfast", "Lunch", "Dinner", "Snacks"];
 
@@ -15,8 +16,55 @@ export default function RecipesPage() {
 
   const [category, setCategory] = useState(initialCategory);
   const [search, setSearch] = useState("");
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
 
+  // Get recipes and their ingredients and instructions from Supabase
+  const loadRecipes = useCallback(async () => {
+    setLoading(true);
+    setLoadError(false);
+
+    const { data, error } = await supabase
+      .from("recipes")
+      .select(`
+        *,
+        ingredients(name, quantity),
+        instructions(step_number, instruction)
+      `)
+      .order("title");
+
+    if (error) {
+      console.error("Error loading recipes:", error.message);
+      setLoadError(true);
+      setLoading(false);
+      return;
+    }
+
+    const formattedRecipes = (data ?? []).map((recipe) => ({
+      ...recipe,
+      ingredients: recipe.ingredients ?? [],
+      instructions: (recipe.instructions ?? [])
+        .sort(
+          (a: { step_number: number }, b: { step_number: number }) =>
+            a.step_number - b.step_number
+        )
+        .map(
+          (step: { step_number: number; instruction: string }) =>
+            step.instruction
+        ),
+    })) as Recipe[];
+
+    setRecipes(formattedRecipes);
+    setLoading(false);
+  }, []);
+
+  // Load recipes when the page opens
+  useEffect(() => {
+    loadRecipes();
+  }, [loadRecipes]);
+
+  // Search and filter recipes
   const filteredRecipes = useMemo(() => {
     return recipes.filter((recipe) => {
       const matchesCategory =
@@ -29,7 +77,7 @@ export default function RecipesPage() {
 
       return matchesCategory && searchText.includes(search.toLowerCase());
     });
-  }, [category, search]);
+  }, [recipes, category, search]);
 
   return (
     <>
@@ -72,6 +120,7 @@ export default function RecipesPage() {
               Showing {filteredRecipes.length}{" "}
               {filteredRecipes.length === 1 ? "recipe" : "recipes"}
             </h2>
+
             <button
               className="text-link"
               onClick={() => {
@@ -84,14 +133,16 @@ export default function RecipesPage() {
             </button>
           </div>
 
-          {loadError ? (
+          {loading ? (
+            <div className="state-card">
+              <h3>Loading recipes...</h3>
+              <p>Please wait while we retrieve your recipes.</p>
+            </div>
+          ) : loadError ? (
             <div className="state-card">
               <h3>Unable to load recipes</h3>
-              <p>Please try again.</p>
-              <button
-                className="primary-button"
-                onClick={() => setLoadError(false)}
-              >
+              <p>Please check your connection and try again.</p>
+              <button className="primary-button" onClick={loadRecipes}>
                 Retry
               </button>
             </div>
