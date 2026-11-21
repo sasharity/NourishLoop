@@ -1,23 +1,41 @@
-
+"use client";
 import Link from "next/link";
 import type { Recipe } from "@/data/recipes";
+import { useFavorites } from "@/components/FavoritesProvider";
+
 
 type RecipeCardProps = {
   recipe: Recipe;
 };
 
 export default function RecipeCard({ recipe }: RecipeCardProps) {
-  return (
-    <article className="recipe-card">
-      <Link href={`/recipes/${recipe.id}`} className="recipe-image-link">
-        <img
-          src={recipe.image}
-          alt={recipe.title}
-          className="recipe-image"
-        />
-        <span className="image-category">{recipe.category}</span>
-      </Link>
+   const { isFavorite, toggleFavorite } = useFavorites();
+   const saved = isFavorite(recipe.id);
 
+    return (
+    <article className="recipe-card">
+        <div className="recipe-image-link">
+            <Link href={`/recipes/${recipe.id}`} >
+                <img
+                    src={recipe.image}
+                    alt={recipe.title}
+                    className="recipe-image"
+                />
+            </Link>
+
+       <span className="image-category">{recipe.category}</span>
+
+        <button
+          type="button"
+          className={`favorite-button ${saved ? "saved" : ""}`}
+          onClick={() => toggleFavorite(recipe.id)}
+          aria-label={saved ? "Remove from favourites" : "Save to favourites"}
+          aria-pressed={saved}
+        >
+          {saved ? "♥" : "♡"}
+        </button>
+        </div>
+        
       <div className="recipe-card-content">
         <div className="recipe-card-meta">
         <span>

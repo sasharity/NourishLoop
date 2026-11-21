@@ -20,6 +20,7 @@ export default function RecipesPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
 
+  
   // Get recipes and their ingredients and instructions from Supabase
   const loadRecipes = useCallback(async () => {
     setLoading(true);
