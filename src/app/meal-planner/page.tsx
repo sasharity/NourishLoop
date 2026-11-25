@@ -28,9 +28,13 @@ function getMonday(date: Date) {
 }
 
 export default function MealPlannerPage() {
-  const [week, setWeek] = useState(() => getMonday(new Date()));
+  const [week, setWeek] = useState<Date | null>(null);
   const [meals, setMeals] = useState<Meal[]>([]);
   const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+  setWeek(getMonday(new Date()));
+}, []);
 
   useEffect(() => {
     try {
@@ -48,6 +52,9 @@ export default function MealPlannerPage() {
     }
   }, [meals, loaded]);
 
+if (!week || !loaded) {
+  return <p>Loading planner...</p>;
+}
   const days = Array.from({ length: 7 }, (_, i) => {
     const date = new Date(week);
     date.setDate(week.getDate() + i);
@@ -75,7 +82,6 @@ export default function MealPlannerPage() {
     setMeals((current) => current.filter((meal) => meal.id !== id));
   }
 
-  if (!loaded) return <p>Loading planner...</p>;
 
   return (
     <>
