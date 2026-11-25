@@ -38,7 +38,9 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
         
       <div className="recipe-card-content">
         <div className="recipe-card-meta">
-          <span>◷ {recipe.prepTime + recipe.cookTime} min</span>
+        <span>
+          ◷ {(Number(recipe.prepTime) || 0) + (Number(recipe.cookTime) || 0)} min
+       </span>
           <span>★ {recipe.rating}</span>
         </div>
 
