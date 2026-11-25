@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import RecipeCard from "@/components/RecipeCard";
@@ -9,7 +10,7 @@ import type { Recipe } from "@/data/recipes";
 
 const categories = ["All", "Breakfast", "Lunch", "Dinner", "Snacks"];
 
-export default function RecipesPage() {
+function RecipesContent() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category") || "All";
 
@@ -43,8 +44,14 @@ export default function RecipesPage() {
       ...row,
       ingredients: row.ingredients ?? [],
       instructions: (row.instructions ?? [])
-        .sort((a: { step_number: number }, b: { step_number: number }) => a.step_number - b.step_number)
-        .map((step: { step_number: number; instruction: string }) => step.instruction),
+        .sort(
+          (a: { step_number: number }, b: { step_number: number }) =>
+            a.step_number - b.step_number
+        )
+        .map(
+          (step: { step_number: number; instruction: string }) =>
+            step.instruction
+        ),
     })) as Recipe[];
 
     setRecipes(formattedRecipes);
@@ -159,5 +166,25 @@ export default function RecipesPage() {
         </section>
       </main>
     </>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense
+      fallback={
+        <>
+          <Navbar />
+          <main className="page-container">
+            <div className="state-card">
+              <h3>Loading recipes...</h3>
+              <p>Please wait while we retrieve your recipes.</p>
+            </div>
+          </main>
+        </>
+      }
+    >
+      <RecipesContent />
+    </Suspense>
   );
 }
