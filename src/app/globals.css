@@ -512,6 +512,7 @@ h2 {
 .back-link {
   display: inline-block;
   margin-bottom: 25px;
+  margin-right: 50px;
   color: var(--green);
   font-size: 12px;
 }
@@ -710,6 +711,131 @@ h2 {
   font-size: 12px;
   line-height: 1.7;
 }
+
+/* Recipe Editor Form */
+.recipe-form {
+  max-width: 850px;
+  margin: 30px auto;
+  padding: 30px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.recipe-form h2 {
+  margin: 28px 0 16px;
+  color: #24352b;
+  font-size: 20px;
+}
+
+.recipe-form label {
+  display: block;
+  margin-bottom: 7px;
+  color: #374151;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.recipe-form input,
+.recipe-form select,
+.recipe-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  color: #24352b;
+  font: inherit;
+  margin-bottom: 18px;
+  box-sizing: border-box;
+}
+
+.recipe-form input:focus,
+.recipe-form select:focus,
+.recipe-form textarea:focus {
+  outline: none;
+  border-color: #54845f;
+  box-shadow: 0 0 0 3px rgba(84, 132, 95, 0.12);
+}
+
+.recipe-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.recipe-form button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #54845f;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.recipe-form button:hover {
+  background: #416b4b;
+}
+
+.recipe-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.recipe-form .form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.recipe-form button[type="button"] {
+  margin: 10px 8px 20px 0;
+}
+
+.recipe-form button[type="submit"] {
+  margin-top: 25px;
+  margin-bottom: 15px;
+}
+
+
+.edit-recipe-header h1 {
+  margin: 0 0 0 30px;
+  font-size: 24px;
+}
+
+.success-message {
+  color: #2e7d32;
+  font-weight: 700;
+  background: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.error-message {
+  color: #b42318;
+  font-weight: 700;
+  background: #fef3f2;
+  border: 1px solid #fecdca;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+
+@media (max-width: 600px) {
+  .recipe-form {
+    padding: 18px;
+    margin: 20px 12px;
+  }
+
+  .recipe-form .form-actions {
+    flex-direction: column;
+  }
+}
+
 
 @media (max-width: 760px) {
   .site-header {

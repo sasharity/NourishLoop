@@ -2,17 +2,149 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
-import { recipes } from "@/data/recipes";
+import { supabase } from "@/lib/supabase";
+
+type RecipeDetail = {
+  id: string;
+  title: string;
+  category: string;
+  image: string;
+  description: string;
+  prepTime: number;
+  cookTime: number;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  difficulty: string;
+  servings: number;
+  ingredients: {
+    name: string;
+    quantity: string;
+  }[];
+  instructions: string[];
+};
 
 export default function RecipeDetailPage() {
   const params = useParams<{ id: string }>();
-  const recipe = recipes.find((item) => item.id === params.id);
 
-  const [servings, setServings] = useState(recipe?.servings ?? 1);
+  const [recipe, setRecipe] = useState<RecipeDetail | null>(null);
+  const [servings, setServings] = useState(1);
   const [checkedIngredients, setCheckedIngredients] = useState<number[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchRecipe() {
+      setLoading(true);
+      setLoadError("");
+
+      try {
+        // Fetch recipe details
+        const { data: recipeData, error: recipeError } = await supabase
+          .from("recipes")
+          .select("*")
+          .eq("id", params.id)
+          .maybeSingle();
+
+        if (recipeError) throw recipeError;
+
+        if (!recipeData) {
+          if (!cancelled) setRecipe(null);
+          return;
+        }
+
+        // Fetch ingredients and instructions
+        const [ingredientsResult, instructionsResult] =
+          await Promise.all([
+            supabase
+              .from("ingredients")
+              .select("name, quantity, unit")
+              .eq("recipe_id", params.id),
+
+            supabase
+              .from("instructions")
+              .select("step_number, instruction")
+              .eq("recipe_id", params.id)
+              .order("step_number", { ascending: true }),
+          ]);
+
+        if (ingredientsResult.error) throw ingredientsResult.error;
+        if (instructionsResult.error) throw instructionsResult.error;
+
+        const loadedRecipe: RecipeDetail = {
+          id: recipeData.id,
+          title: recipeData.title,
+          category: recipeData.category,
+          image: recipeData.image ?? "",
+          description: recipeData.description ?? "",
+          prepTime: recipeData.prep_time,
+          cookTime: recipeData.cook_time,
+          calories: recipeData.calories ?? 0,
+          protein: recipeData.protein ?? 0,
+          carbs: recipeData.carbs ?? 0,
+          fat: recipeData.fat ?? 0,
+          difficulty: recipeData.difficulty ?? "Easy",
+          servings: recipeData.servings ?? 1,
+
+          ingredients: ingredientsResult.data.map((item) => ({
+            name: item.name,
+            quantity: `${item.quantity} ${item.unit}`.trim(),
+          })),
+
+          instructions: instructionsResult.data.map(
+            (item) => item.instruction
+          ),
+        };
+
+        if (!cancelled) {
+          setRecipe(loadedRecipe);
+          setServings(loadedRecipe.servings);
+          setCheckedIngredients([]);
+        }
+      } catch (error) {
+        console.error("Error loading recipe:", error);
+
+        if (!cancelled) {
+          setLoadError("Unable to load recipe. Please try again.");
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    fetchRecipe();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [params.id]);
+
+  const [unused] = useState(false);
+
+  if (loading) {
+    return (
+      <main className="page-container">
+        <p>Loading recipe...</p>
+      </main>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <main className="page-container">
+        <h1>{loadError}</h1>
+        <Link href="/recipes" className="text-link">
+          Return to recipes
+        </Link>
+      </main>
+    );
+  }
 
   if (!recipe) {
     return (
@@ -40,6 +172,10 @@ export default function RecipeDetailPage() {
       <main className="page-container detail-container">
         <Link href="/recipes" className="back-link">
           ← Back to recipes
+        </Link>
+
+        <Link href={`/recipes/${recipe.id}/edit`} className="back-link">
+          Edit Recipe
         </Link>
 
         <div className="detail-layout">
