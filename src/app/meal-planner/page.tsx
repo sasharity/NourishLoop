@@ -32,16 +32,10 @@ function getMonday(date: Date) {
 }
 
 export default function MealPlannerPage() {
-  const [week, setWeek] = useState<Date>(() => getMonday(new Date()));
-  const [meals, setMeals] = useState<Meal[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [week, setWeek] = useState<Date | null>(null);
+  const [todayKey, setTodayKey] = useState<string>("");
+  const [meals, setMeals] = useState<Meal[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [recipesLoading, setRecipesLoading] = useState(true);
 
@@ -53,7 +47,36 @@ export default function MealPlannerPage() {
     dayLabel: string;
   } | null>(null);
 
-  // Load recipes from Supabase (fallback to static data if needed)
+  // Initialize client-only date and saved meal plan after mount
+  useEffect(() => {
+    let active = true;
+
+    async function initClientState() {
+      await Promise.resolve();
+      if (!active) return;
+
+      const now = new Date();
+      setWeek(getMonday(now));
+      setTodayKey(dateKey(now));
+
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) setMeals(JSON.parse(saved));
+      } catch {
+        console.error("Could not load meal plan.");
+      }
+
+      setLoaded(true);
+    }
+
+    initClientState();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Load recipes from Supabase
   useEffect(() => {
     async function loadRecipes() {
       try {
@@ -98,14 +121,16 @@ export default function MealPlannerPage() {
 
   // Save changes to browser storage
   useEffect(() => {
+    if (!loaded) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(meals));
     } catch {
       console.error("Could not save meal plan.");
     }
-  }, [meals]);
+  }, [meals, loaded]);
 
   const days = useMemo(() => {
+    if (!week) return [];
     return Array.from({ length: 7 }, (_, i) => {
       const date = new Date(week);
       date.setDate(week.getDate() + i);
@@ -149,6 +174,17 @@ export default function MealPlannerPage() {
     recipes.forEach((r) => map.set(r.id, r));
     return map;
   }, [recipes]);
+
+  if (!week || !loaded) {
+    return (
+      <>
+        <Navbar />
+        <main className="page-container meal-planner">
+          <p className="py-12 text-center text-gray-500">Loading planner...</p>
+        </main>
+      </>
+    );
+  }
 
   return (
     <>
@@ -197,7 +233,7 @@ export default function MealPlannerPage() {
           {days.map((day) => {
             const date = dateKey(day);
             const dayMeals = meals.filter((meal) => meal.date === date);
-            const isToday = dateKey(new Date()) === date;
+            const isToday = todayKey === date;
 
             return (
               <section
