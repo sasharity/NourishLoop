@@ -1,8 +1,11 @@
 
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import type { User } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
 
 const links = [
   { label: "Home", href: "/", icon: "⌂" },
@@ -14,6 +17,41 @@ const links = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    supabase.auth.getUser().then(({ data: { user: currentUser } }) => {
+      setUser(currentUser);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  async function handleLogout() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setUser(null);
+    router.push("/login");
+    router.refresh();
+  }
+
+  const firstName = user?.user_metadata?.first_name as string | undefined;
+  const lastName = user?.user_metadata?.last_name as string | undefined;
+  const initials =
+    firstName && lastName
+      ? `${firstName[0]}${lastName[0]}`.toUpperCase()
+      : (user?.email?.[0] ?? "U").toUpperCase();
 
   return (
     <>
@@ -40,8 +78,30 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <div className="header-profile" aria-label="User profile">
-          <span>U</span>
+        <div className="flex items-center gap-3">
+          {user ? (
+            <>
+              <div className="header-profile" aria-label="User profile">
+                <span>{initials}</span>
+              </div>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="nav-link"
+              >
+                Log out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="nav-link">
+                Log in
+              </Link>
+              <Link href="/signup" className="nav-link">
+                Sign up
+              </Link>
+            </>
+          )}
         </div>
       </header>
 
