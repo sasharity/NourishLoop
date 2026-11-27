@@ -92,9 +92,9 @@ export default function HomePage() {
             <h1 className="mt-1 text-3xl font-bold leading-tight text-emerald-950 sm:text-4xl">
               Good day{firstName ? `, ${firstName}` : ""}
             </h1>
-            <p className="mt-1 text-sm text-gray-600">
-              Your mindful loop is flourishing today.
-            </p>
+          <p className="mt-1 text-sm text-gray-700">
+            Your mindful loop is flourishing today.
+          </p>
           </div>
           <div className="shrink-0 rounded-full border border-emerald-900/10 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-900 shadow-2xs">
             5-Day Streak
@@ -133,7 +133,7 @@ export default function HomePage() {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search seasonal recipes..."
               aria-label="Search recipes"
-              className="w-full bg-transparent text-sm text-gray-800 placeholder:text-gray-400 focus:outline-hidden"
+              className="w-full bg-transparent text-sm text-gray-900 placeholder:text-gray-600 focus:outline-hidden"
             />
             <button
               type="submit"
@@ -168,7 +168,7 @@ export default function HomePage() {
               <h2 className="text-xl font-bold text-emerald-950">
                 Curated For You
               </h2>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-700">
                 Nutrient-dense seasonal dishes crafted for energy
               </p>
             </div>
@@ -219,12 +219,12 @@ export default function HomePage() {
                     >
                       {recipe.title}
                     </Link>
-                    <p className="mt-1 line-clamp-1 text-xs text-gray-500">
+                    <p className="mt-1 line-clamp-1 text-xs text-gray-700">
                       {recipe.description}
                     </p>
 
                     <div className="mt-3 flex items-center justify-between">
-                      <span className="text-xs text-gray-600">
+                      <span className="text-xs text-gray-700">
                         <strong>{recipe.calories}</strong> kcal •{" "}
                         <strong>{recipe.protein}g</strong> protein
                       </span>
@@ -253,7 +253,7 @@ export default function HomePage() {
             </span>
           </div>
 
-          <p className="mb-4 text-xs text-gray-600">
+              <p className="mt-4 text-sm text-gray-700">
             Keep your breakfast, lunch, and dinner organized for the week ahead.
           </p>
 
@@ -271,7 +271,7 @@ export default function HomePage() {
             <h2 className="text-xl font-bold text-emerald-950">
               Explore by Meal
             </h2>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-700">
               Designed around your metabolic flow
             </p>
           </div>
@@ -295,7 +295,7 @@ export default function HomePage() {
                   <h3 className="text-sm font-bold text-emerald-950">
                     {cat.label}
                   </h3>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-700">
                     {categoryCounts[cat.name] ?? 0} recipes
                   </p>
                 </div>
@@ -347,11 +347,11 @@ export default function HomePage() {
                   </Link>
 
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between text-[11px] text-gray-500">
-                      <span className="font-medium text-emerald-800">
+                    <div className="flex items-center justify-between text-[11px] text-gray-700">
+              <span className="font-semibold text-emerald-900 opacity-100">
                         Prep {recipe.prepTime || 10}m
                       </span>
-                      <span>★ {recipe.rating ?? 4.8}</span>
+                      <span className="font-medium text-gray-800">★ {recipe.rating ?? 4.8}</span>
                     </div>
                     <Link
                       href={`/recipes/${recipe.id}`}
@@ -359,7 +359,7 @@ export default function HomePage() {
                     >
                       {recipe.title}
                     </Link>
-                    <p className="mt-0.5 text-xs text-gray-500">
+                    <p className="mt-0.5 text-xs text-gray-700">
                       {recipe.calories} kcal • {recipe.protein}g Protein
                     </p>
                   </div>
@@ -370,8 +370,8 @@ export default function HomePage() {
                     aria-label={saved ? "Remove from favorites" : "Save to favorites"}
                     className={`shrink-0 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
                       saved
-                        ? "border-emerald-700 bg-emerald-50 text-emerald-900"
-                        : "border-gray-200 text-gray-500 hover:border-emerald-600"
+                        ? "border-emerald-800 bg-emerald-50 text-emerald-950"
+                        : "border-gray-400 text-gray-800 hover:border-emerald-700 hover:text-emerald-900"
                     }`}
                   >
                     {saved ? "Saved" : "Save"}
@@ -384,11 +384,11 @@ export default function HomePage() {
 
         {/* Philosophy Quote */}
         <section className="rounded-2xl bg-stone-200/60 p-6 text-center">
-          <p className="mx-auto max-w-md text-xs italic text-gray-600">
+          <p className="mx-auto max-w-md text-xs italic text-gray-700">
             &ldquo;Let nourishment be an act of quiet self-respect, never an
             obligation.&rdquo;
           </p>
-          <p className="mt-2 text-xs font-semibold text-emerald-900">
+          <p className="mt-2 text-xs font-semibold text-gray-800">
             — Nourish Loop Philosophy
           </p>
         </section>
