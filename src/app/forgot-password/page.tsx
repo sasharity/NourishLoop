@@ -1,0 +1,83 @@
+'use client';
+
+import { useState, type FormEvent } from 'react';
+import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
+import TurnstileWidget from '@/components/TurnstileWidget';
+
+export default function ForgotPasswordPage() {
+  const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState('');
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get('email') ?? '').trim();
+
+    setMessage('');
+    setIsSubmitting(true);
+
+    try {
+      const supabase = createClient();
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+        captchaToken: captchaToken || undefined,
+      });
+
+      if (error) {
+        setMessage(error.message);
+        return;
+      }
+
+      setMessage('Check your email for the password reset link.');
+    } catch {
+      setMessage('Unable to connect. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <main className="mx-auto max-w-md p-6">
+      <h1 className="mb-6 text-2xl font-bold">Reset your password</h1>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="email" className="block">
+            Email
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            className="w-full rounded border p-2"
+          />
+        </div>
+
+        <TurnstileWidget onToken={setCaptchaToken} />
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="rounded bg-green-700 px-4 py-2 text-white disabled:opacity-50"
+        >
+          {isSubmitting ? 'Sending link…' : 'Send reset link'}
+        </button>
+
+        <p role="status">{message}</p>
+      </form>
+
+      <p className="mt-4 text-sm">
+        Remembered your password?{' '}
+        <Link href="/login" className="text-green-700 underline">
+          Log in
+        </Link>
+      </p>
+    </main>
+  );
+}

@@ -4,11 +4,13 @@ import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import TurnstileWidget from '@/components/TurnstileWidget';
 
 export default function SignupPage() {
   const router = useRouter();
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState('');
 
   async function handleSignup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -25,10 +27,11 @@ export default function SignupPage() {
     try {
       const supabase = createClient();
 
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
+          captchaToken: captchaToken || undefined,
           data: {
             first_name: firstName,
             last_name: lastName,
@@ -113,6 +116,8 @@ export default function SignupPage() {
             className="w-full rounded border p-2"
           />
         </div>
+
+        <TurnstileWidget onToken={setCaptchaToken} />
 
         <button
           type="submit"
