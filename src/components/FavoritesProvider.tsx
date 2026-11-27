@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -8,11 +7,12 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 type FavoritesContextType = {
   favorites: string[];
   isFavorite: (id: string) => boolean;
-  toggleFavorite: (id: string) => void;
+  toggleFavorite: (id: string) => Promise<void>;
 };
 
 const FavoritesContext = createContext<FavoritesContextType | undefined>(
@@ -23,30 +23,92 @@ const STORAGE_KEY = "nourish-loop-favorites";
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  // Load saved favourites when the app opens.
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        setFavorites(JSON.parse(saved));
+    const supabase = createClient();
+
+    async function loadForUser(uid: string | null) {
+      setUserId(uid);
+
+      if (!uid) {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          setFavorites(saved ? JSON.parse(saved) : []);
+        } catch {
+          setFavorites([]);
+        }
+        return;
       }
-    } catch {
-      console.error("Could not load saved favourites.");
+
+      const { data, error } = await supabase
+        .from("favorites")
+        .select("recipe_id");
+
+      if (error) {
+        console.error("Could not load favorites:", error.message);
+        setFavorites([]);
+        return;
+      }
+
+      setFavorites((data ?? []).map((row) => String(row.recipe_id)));
     }
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      loadForUser(user?.id ?? null);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      loadForUser(session?.user?.id ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  // Save changes to browser storage.
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
-  }, [favorites]);
+  async function toggleFavorite(id: string) {
+    const currentlyFavorite = favorites.includes(id);
+    const nextFavorites = currentlyFavorite
+      ? favorites.filter((item) => item !== id)
+      : [...favorites, id];
 
-  function toggleFavorite(id: string) {
-    setFavorites((current) =>
-      current.includes(id)
-        ? current.filter((item) => item !== id)
-        : [...current, id]
-    );
+    setFavorites(nextFavorites);
+
+    if (!userId) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextFavorites));
+      } catch {
+        console.error("Could not save favorites.");
+      }
+      return;
+    }
+
+    const supabase = createClient();
+
+    if (currentlyFavorite) {
+      const { error } = await supabase
+        .from("favorites")
+        .delete()
+        .eq("user_id", userId)
+        .eq("recipe_id", id);
+
+      if (error) {
+        console.error("Could not remove favorite:", error.message);
+        setFavorites(favorites);
+      }
+    } else {
+      const { error } = await supabase
+        .from("favorites")
+        .insert({ user_id: userId, recipe_id: id });
+
+      if (error) {
+        console.error("Could not save favorite:", error.message);
+        setFavorites(favorites);
+      }
+    }
   }
 
   function isFavorite(id: string) {

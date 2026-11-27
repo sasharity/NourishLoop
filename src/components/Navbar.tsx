@@ -121,6 +121,27 @@ export default function Navbar() {
             <small>{link.label}</small>
           </Link>
         ))}
+
+        {user ? (
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="mobile-nav-link"
+          >
+            <span>↪</span>
+            <small>Log out</small>
+          </button>
+        ) : (
+          <Link
+            href="/login"
+            className={
+              pathname === "/login" ? "mobile-nav-link active" : "mobile-nav-link"
+            }
+          >
+            <span>→</span>
+            <small>Log in</small>
+          </Link>
+        )}
       </nav>
     </>
   );
