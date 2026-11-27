@@ -26,6 +26,8 @@ create policy "Users can delete their own favorites"
   for delete
   using (auth.uid() = user_id);
 
+grant select, insert, delete on public.favorites to authenticated;
+
 -- Ensure recipes has user_id for personal recipe ownership
 alter table public.recipes
   add column if not exists user_id uuid references auth.users(id) on delete cascade default auth.uid();
@@ -55,3 +57,6 @@ create policy "Users can delete their own recipes"
   on public.recipes
   for delete
   using (auth.uid() = user_id);
+
+grant select on public.recipes to anon;
+grant select, insert, update, delete on public.recipes to authenticated;
