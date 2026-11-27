@@ -8,14 +8,28 @@
   --green-dark: #123c30;
   --mint: #e4f2e8;
   --mint-strong: #bcebd0;
-  --text: #263c32;
-  --muted: #89968d;
-  --border: #e7eae2;
+  --text: #1a2e24;
+  --muted: #3d5245;
+  --border: #d4d9d0;
   --orange: #d98156;
 }
 
-* {
-  box-sizing: border-box;
+/* ============================================================
+   FOCUS RINGS — visible keyboard focus for all interactive elements
+   ============================================================ */
+:focus-visible {
+  outline: 3px solid #194c3b;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #194c3b;
+  outline-offset: 2px;
 }
 
 html {
@@ -83,9 +97,11 @@ button:disabled {
   gap: 32px;
 }
 
+/* nav-link: --muted on white - passes AA at 14px bold */
 .nav-link {
   font-size: 13px;
   color: var(--muted);
+  font-weight: 600;
   transition: color 0.2s;
 }
 
@@ -128,10 +144,11 @@ button:disabled {
   margin-bottom: 34px;
 }
 
+/* WCAG AA: eyebrow label — #194c3b on --cream bg gives > 7:1 */
 .eyebrow {
   display: block;
   margin-bottom: 8px;
-  color: #72917c;
+  color: #194c3b;
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 1.5px;
@@ -231,10 +248,11 @@ h2 {
   font-size: 28px;
 }
 
+/* featured-overlay p: white on dark overlay — OK, just ensure contrast */
 .featured-overlay p {
   max-width: 500px;
   margin-bottom: 14px;
-  color: #f0f2ec;
+  color: #ffffff;
   font-size: 12px;
 }
 
@@ -265,8 +283,9 @@ h2 {
   background: var(--mint);
 }
 
+/* schedule-time: use --green for WCAG AA compliance on --mint bg */
 .schedule-time {
-  color: #72917c;
+  color: #194c3b;
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 1px;
@@ -278,9 +297,10 @@ h2 {
   font-size: 14px;
 }
 
+/* schedule-item p: use --text at 11px for WCAG AA */
 .schedule-item p {
   margin-bottom: 0;
-  color: var(--muted);
+  color: var(--text);
   font-size: 11px;
 }
 
@@ -320,9 +340,11 @@ h2 {
   font-size: 12px;
 }
 
+/* category-card small: use --text at 10px for readability */
 .category-card small {
-  color: var(--muted);
+  color: var(--text);
   font-size: 10px;
+  font-weight: 500;
 }
 
 .recipe-grid {
@@ -357,6 +379,7 @@ h2 {
   transform: scale(1.04);
 }
 
+/* image-category badge: dark text on white bg for AA */
 .image-category {
   position: absolute;
   bottom: 10px;
@@ -366,17 +389,20 @@ h2 {
   background: white;
   color: var(--green);
   font-size: 10px;
+  font-weight: 700;
 }
 
 .recipe-card-content {
   padding: 15px;
 }
 
+/* recipe-card-meta: bump to --text for 7:1 on white */
 .recipe-card-meta {
   display: flex;
   justify-content: space-between;
-  color: var(--muted);
+  color: var(--text);
   font-size: 10px;
+  font-weight: 500;
 }
 
 .recipe-title-link h3 {
@@ -387,13 +413,14 @@ h2 {
   font-weight: 600;
 }
 
+/* recipe-card-content p: use --text instead of --muted at 11px */
 .recipe-card-content p {
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   margin-bottom: 14px;
-  color: var(--muted);
+  color: var(--text);
   font-size: 11px;
   line-height: 1.6;
 }
@@ -405,9 +432,11 @@ h2 {
   gap: 8px;
 }
 
+/* healthy-label: #194c3b gives > 7:1 on white */
 .healthy-label {
-  color: #6a9276;
+  color: #194c3b;
   font-size: 9px;
+  font-weight: 600;
 }
 
 .small-button {
@@ -454,13 +483,15 @@ h2 {
   margin-top: 15px;
 }
 
+/* filter-button: dark text, border - passes AA */
 .filter-button {
   padding: 8px 16px;
   border: 1px solid var(--border);
   border-radius: 20px;
   background: white;
-  color: var(--muted);
+  color: var(--text);
   font-size: 11px;
+  font-weight: 600;
 }
 
 .filter-button.active {
@@ -860,6 +891,7 @@ h2 {
     background: white;
   }
 
+  /* mobile-nav-link: --muted on white (#3d5245 on #fff = ~6.5:1, AA pass) */
   .mobile-nav-link {
     display: flex;
     flex-direction: column;
@@ -871,6 +903,7 @@ h2 {
 
   .mobile-nav-link small {
     font-size: 9px;
+    font-weight: 600;
   }
 
   .mobile-nav-link.active {
@@ -1095,7 +1128,7 @@ h2 {
 }
 
 .meal-slot {
-  padding: 12px 0;
+  padding: 12px 12px;
   border-top: 1px solid #eee;
 }
 
