@@ -1,9 +1,12 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
 export default function SignupPage() {
+  const router = useRouter();
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -11,6 +14,8 @@ export default function SignupPage() {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
+    const firstName = String(formData.get('firstName') ?? '').trim();
+    const lastName = String(formData.get('lastName') ?? '').trim();
     const email = String(formData.get('email') ?? '').trim();
     const password = String(formData.get('password') ?? '');
 
@@ -23,6 +28,12 @@ export default function SignupPage() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+          },
+        },
       });
 
       if (error) {
@@ -30,11 +41,8 @@ export default function SignupPage() {
         return;
       }
 
-      setMessage(
-        data.session
-          ? 'Your account is ready.'
-          : 'Check your email for the next step.'
-      );
+      router.push('/');
+      router.refresh();
     } catch {
       setMessage('Unable to connect. Please try again.');
     } finally {
@@ -47,6 +55,36 @@ export default function SignupPage() {
       <h1 className="mb-6 text-2xl font-bold">Create your account</h1>
 
       <form onSubmit={handleSignup} className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="firstName" className="block">
+              First Name
+            </label>
+            <input
+              id="firstName"
+              name="firstName"
+              type="text"
+              autoComplete="given-name"
+              required
+              className="w-full rounded border p-2"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="lastName" className="block">
+              Last Name
+            </label>
+            <input
+              id="lastName"
+              name="lastName"
+              type="text"
+              autoComplete="family-name"
+              required
+              className="w-full rounded border p-2"
+            />
+          </div>
+        </div>
+
         <div>
           <label htmlFor="email" className="block">
             Email
@@ -86,6 +124,13 @@ export default function SignupPage() {
 
         <p role="status">{message}</p>
       </form>
+
+      <p className="mt-4 text-sm">
+        Already have an account?{' '}
+        <Link href="/login" className="text-green-700 underline">
+          Log in
+        </Link>
+      </p>
     </main>
   );
 }
