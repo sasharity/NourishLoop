@@ -200,16 +200,16 @@ export default function MealPlannerPage() {
         </header>
 
         {/* Week navigation bar */}
-        <div className="week-nav mb-6 flex items-center justify-between rounded-xl bg-white p-3 shadow-xs border border-gray-200">
+        <div className="mb-6 grid grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-xl border border-gray-200 bg-white p-3 shadow-xs">
           <button
             onClick={() =>
               setWeek(new Date(week.getFullYear(), week.getMonth(), week.getDate() - 7))
             }
-            className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium hover:bg-gray-50 transition"
+            className="justify-self-start whitespace-nowrap rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs font-medium transition hover:bg-gray-50 sm:px-3 sm:text-sm"
           >
             ← Previous
           </button>
-          <strong className="text-sm font-semibold text-emerald-900 sm:text-base">
+          <strong className="whitespace-nowrap text-center text-xs font-semibold text-emerald-900 sm:text-base">
             {days[0].toLocaleDateString("en", { month: "short", day: "numeric" })}
             {" – "}
             {days[6].toLocaleDateString("en", {
@@ -222,7 +222,7 @@ export default function MealPlannerPage() {
             onClick={() =>
               setWeek(new Date(week.getFullYear(), week.getMonth(), week.getDate() + 7))
             }
-            className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium hover:bg-gray-50 transition"
+            className="justify-self-end whitespace-nowrap rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs font-medium transition hover:bg-gray-50 sm:px-3 sm:text-sm"
           >
             Next →
           </button>
@@ -267,7 +267,7 @@ export default function MealPlannerPage() {
                       >
                         <div>
                           <div className="mb-2 flex items-center justify-between">
-                            <h3 className="text-xs font-semibold uppercase tracking-wider text-emerald-900">
+                            <h3 className="!mb-0 text-xs font-semibold uppercase tracking-wider text-emerald-900">
                               {type}
                             </h3>
                             <span className="text-[11px] text-gray-400">

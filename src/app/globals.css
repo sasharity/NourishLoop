@@ -1138,7 +1138,7 @@ h2 {
 
 @media (max-width: 600px) {
   .week-nav {
-    align-items: flex-start;
+    align-items: center;
   }
 
   .planned-meal {
